@@ -48,17 +48,22 @@ static ParseResult parse_single_longopt(ArgParser* parser, arg_str arg, ArgInfo 
 {
 	StrFindResult eqPos = arg_str_find(arg, '=');
 	arg_str name = eqPos.present
-	           ? arg_str_ref_chars(arg.ptr, eqPos.value)
-	           : arg;
+	               ? arg_str_ref_chars(arg.ptr, eqPos.value)
+	               : arg;
 	Arg** foundArg = NULL;
 	ARG_BUF_FIND(parser->args, name, longname_eq, &foundArg);
 	if (foundArg == NULL) {
-		return (ParseResult)ARG_ERR(arg_str_fmt("unknown option: '--" ARG_STR_FMT "'", ARG_STR_ARG(name)));
+		arg_str msg = arg_str_fmt("unknown option: '--" ARG_STR_FMT "'", ARG_STR_ARG(name));
+		return (ParseResult)ARG_ERR(msg);
 	}
 
 	switch ((*foundArg)->kind) {
 	case ARGKIND_POS: {
-		arg_str msg = arg_str_fmt("option '" ARG_STR_FMT "' is positional", ARG_STR_ARG(name));
+		arg_str msg =
+		        arg_str_fmt(
+		                "option '" ARG_STR_FMT "' is positional",
+		                ARG_STR_ARG(name)
+		        );
 		return (ParseResult)ARG_ERR(msg);
 	}
 	case ARGKIND_FLAG:
@@ -69,11 +74,18 @@ static ParseResult parse_single_longopt(ArgParser* parser, arg_str arg, ArgInfo 
 		if (eqPos.present) {
 			uint64_t afterEqPos = eqPos.value + 1;
 			(*foundArg)->value =
-			        arg_str_ref_chars(&arg.ptr[afterEqPos], arg_str_len(arg) - afterEqPos);
+			        arg_str_ref_chars(
+			                &arg.ptr[afterEqPos],
+			                arg_str_len(arg) - afterEqPos
+			        );
 			// didn't move the offset
 			return (ParseResult)ARG_OK(info.ofs + 1);
 		} else if (info.ofs + 1 >= info.argc) {
-			arg_str msg = arg_str_fmt("option '--" ARG_STR_FMT "' requires a value", ARG_STR_ARG(name));
+			arg_str msg =
+			        arg_str_fmt(
+			                "option '--" ARG_STR_FMT "' requires a value",
+			                ARG_STR_ARG(name)
+			        );
 			return (ParseResult)ARG_ERR(msg);
 		} else {
 			(*foundArg)->value = arg_str_ref(info.argv[info.ofs + 1]);
@@ -97,12 +109,15 @@ static ParseResult parse_shortopts(ArgParser* parser, arg_str arg, ArgInfo info)
 		Arg** foundArg = NULL;
 		ARG_BUF_FIND(parser->args, shortname, shortname_eq, &foundArg);
 		if (foundArg == NULL) {
-			return (ParseResult)ARG_ERR(arg_str_fmt("unknown option: '-%c'", shortname));
+			arg_str msg = arg_str_fmt("unknown option: '-%c'", shortname);
+			return (ParseResult)ARG_ERR(msg);
 		}
 
 		switch ((*foundArg)->kind) {
-		case ARGKIND_POS:
-			return (ParseResult)ARG_ERR(arg_str_fmt("option '%c' is positional", shortname));
+		case ARGKIND_POS: {
+			arg_str msg = arg_str_fmt("option '%c' is positional", shortname);
+			return (ParseResult)ARG_ERR(msg);
+		}
 		case ARGKIND_FLAG:
 			(*foundArg)->flagValue = true;
 			break;
@@ -146,7 +161,8 @@ static ParseResult parse_positional(
 	return (ParseResult)ARG_OK(info.ofs + 1);
 }
 
-static ParseResult parse_arg(ArgParser* parser, arg_str arg, ArgInfo info, PositionalInfo* positionals)
+static ParseResult parse_arg(ArgParser* parser, arg_str arg, ArgInfo info,
+                             PositionalInfo* positionals)
 {
 	if (arg.ptr[0] == '-') {
 		if (arg.ptr[1] == '-') {
@@ -176,7 +192,11 @@ arg_str generate_missing_positional_message(ArgBuf args, PositionalInfo position
 		arg_str_free(buf.ptr[i]);
 	}
 	ARG_BUF_FREE(buf);
-	arg_str msg = arg_str_fmt("missing positional arguments: " ARG_STR_FMT, ARG_STR_ARG(joined));
+	arg_str msg =
+	        arg_str_fmt(
+	                "missing positional arguments: " ARG_STR_FMT,
+	                ARG_STR_ARG(joined)
+	        );
 	arg_str_free(joined);
 	return msg;
 }
@@ -213,7 +233,12 @@ ArgParseErr argparser_parse(ArgParser* parser, int argc, char** argv)
 
 void argparser_show_help(ArgParser* parser, FILE* fp)
 {
-	(void)fprintf(fp, ARG_STR_FMT ": " ARG_STR_FMT "\n", ARG_STR_ARG(parser->name), ARG_STR_ARG(parser->help));
+	(void)fprintf(
+	        fp,
+	        ARG_STR_FMT ": " ARG_STR_FMT "\n",
+	        ARG_STR_ARG(parser->name),
+	        ARG_STR_ARG(parser->help)
+	);
 	if (parser->args.len == 0) {
 		return;
 	}
@@ -259,7 +284,11 @@ void argparser_show_help(ArgParser* parser, FILE* fp)
 				(void)fprintf(fp, "      ");
 			}
 			if (arg_str_len(arg->longname) > 0) {
-				(void)fprintf(fp, "--" ARG_STR_FMT " <VALUE>", ARG_STR_ARG(arg->longname));
+				(void)fprintf(
+				        fp,
+				        "--" ARG_STR_FMT " <VALUE>",
+				        ARG_STR_ARG(arg->longname)
+				);
 			} else {
 				(void)fprintf(fp, "<VALUE>");
 			}
