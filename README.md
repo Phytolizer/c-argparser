@@ -35,6 +35,7 @@ int main(int argc, char** argv) {
     if (err.present) {
         arg_parser_show_help(&parser, stderr);
 	(void)fprintf(stderr, "ERROR: " ARG_STR_FMT "\n", ARG_STR_ARG(err.value));
+	arg_str_free(err.value);
         return 1;
     }
 }
