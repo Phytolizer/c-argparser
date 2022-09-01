@@ -1,5 +1,6 @@
 SOURCES = arg.c str.c
 OBJS = $(patsubst %.c,%.o,$(SOURCES))
+CFLAGS = -std=c11
 LIB = libargparser.a
 
 $(LIB): $(OBJS)
@@ -7,4 +8,3 @@ $(LIB): $(OBJS)
 
 clean:
 	rm -f $(OBJS) $(LIB)
-
