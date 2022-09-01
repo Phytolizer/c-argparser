@@ -7,9 +7,9 @@
 #include <stdio.h>
 
 typedef enum {
-	ARGKIND_POS,
-	ARGKIND_OPT,
-	ARGKIND_FLAG,
+	ARG_KIND_POS,
+	ARG_KIND_OPT,
+	ARG_KIND_FLAG,
 } ArgKind;
 
 typedef struct {

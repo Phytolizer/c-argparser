@@ -14,7 +14,7 @@ static IndexBuf count_positionals(ArgBuf args)
 {
 	IndexBuf indices = ARG_BUF_NEW;
 	for (uint64_t i = 0; i < args.len; i++) {
-		if (args.ptr[i]->kind == ARGKIND_POS) {
+		if (args.ptr[i]->kind == ARG_KIND_POS) {
 			ARG_BUF_PUSH(&indices, i);
 		}
 	}
@@ -58,7 +58,7 @@ static ParseResult parse_single_longopt(ArgParser* parser, arg_str arg, ArgInfo 
 	}
 
 	switch ((*foundArg)->kind) {
-	case ARGKIND_POS: {
+	case ARG_KIND_POS: {
 		arg_str msg =
 		        arg_str_fmt(
 		                "option '" ARG_STR_FMT "' is positional",
@@ -66,11 +66,11 @@ static ParseResult parse_single_longopt(ArgParser* parser, arg_str arg, ArgInfo 
 		        );
 		return (ParseResult)ARG_ERR(msg);
 	}
-	case ARGKIND_FLAG:
+	case ARG_KIND_FLAG:
 		(*foundArg)->flagValue = true;
 		// didn't move the offset
 		return (ParseResult)ARG_OK(info.ofs + 1);
-	case ARGKIND_OPT:
+	case ARG_KIND_OPT:
 		if (eqPos.present) {
 			uint64_t afterEqPos = eqPos.value + 1;
 			(*foundArg)->value =
@@ -114,14 +114,14 @@ static ParseResult parse_shortopts(ArgParser* parser, arg_str arg, ArgInfo info)
 		}
 
 		switch ((*foundArg)->kind) {
-		case ARGKIND_POS: {
+		case ARG_KIND_POS: {
 			arg_str msg = arg_str_fmt("option '%c' is positional", shortname);
 			return (ParseResult)ARG_ERR(msg);
 		}
-		case ARGKIND_FLAG:
+		case ARG_KIND_FLAG:
 			(*foundArg)->flagValue = true;
 			break;
-		case ARGKIND_OPT:
+		case ARG_KIND_OPT:
 			if (i + 1 < arg_str_len(arg)) {
 				(*foundArg)->value = arg_str_shifted(arg, i + 1);
 				// consumed the rest of the arg
@@ -254,10 +254,10 @@ void arg_parser_show_help(ArgParser* parser, FILE* fp)
 	for (uint64_t i = 0; i < parser->args.len; i++) {
 		Arg* arg = parser->args.ptr[i];
 		switch (arg->kind) {
-		case ARGKIND_POS:
+		case ARG_KIND_POS:
 			(void)fprintf(fp, "  " ARG_STR_FMT, ARG_STR_ARG(arg->longname));
 			break;
-		case ARGKIND_FLAG:
+		case ARG_KIND_FLAG:
 			if (arg->shortname != 0) {
 				(void)fprintf(fp, "  -%c", arg->shortname);
 				if (arg_str_len(arg->longname) > 0) {
@@ -272,7 +272,7 @@ void arg_parser_show_help(ArgParser* parser, FILE* fp)
 				(void)fprintf(fp, "--" ARG_STR_FMT, ARG_STR_ARG(arg->longname));
 			}
 			break;
-		case ARGKIND_OPT:
+		case ARG_KIND_OPT:
 			if (arg->shortname != 0) {
 				(void)fprintf(fp, "  -%c", arg->shortname);
 				if (arg_str_len(arg->longname) > 0) {
