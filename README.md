@@ -14,4 +14,4 @@ To use the library, simply include `arg.h` in your project and link with
 
 ## Example
 
-https://github.com/Phytolizer/c-argparser/blob/main/main.c
+https://github.com/Phytolizer/c-argparser/blob/82bccddf905dd28f0dc0e4365735d656e7452e08/main.c
