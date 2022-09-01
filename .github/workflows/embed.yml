@@ -1,0 +1,20 @@
+name: Validate README.md
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v3
+        with:
+          node-version: latest
+      - run: |
+          npx --yes embedme --verify README.md
+
