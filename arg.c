@@ -21,7 +21,7 @@ static IndexBuf count_positionals(ArgBuf args)
 	return indices;
 }
 
-ArgParser arg_parser_new(arg_str name, arg_str help, ArgBuf args)
+ArgParser arg_parser_new(ArgStr name, ArgStr help, ArgBuf args)
 {
 	return (ArgParser) {
 		.name = name,
@@ -31,7 +31,7 @@ ArgParser arg_parser_new(arg_str name, arg_str help, ArgBuf args)
 	};
 }
 
-static bool longname_eq(Arg* arg, arg_str longname)
+static bool longname_eq(Arg* arg, ArgStr longname)
 {
 	return arg_str_eq(arg->longname, longname);
 }
@@ -42,24 +42,24 @@ typedef struct {
 	int ofs;
 } ArgInfo;
 
-typedef ARG_RESULT(int, arg_str) ParseResult;
+typedef ARG_RESULT(int, ArgStr) ParseResult;
 
-static ParseResult parse_single_longopt(ArgParser* parser, arg_str arg, ArgInfo info)
+static ParseResult parse_single_longopt(ArgParser* parser, ArgStr arg, ArgInfo info)
 {
 	StrFindResult eqPos = arg_str_find(arg, '=');
-	arg_str name = eqPos.present
+	ArgStr name = eqPos.present
 	               ? arg_str_ref_chars(arg.ptr, eqPos.value)
 	               : arg;
 	Arg** foundArg = NULL;
 	ARG_BUF_FIND(parser->args, name, longname_eq, &foundArg);
 	if (foundArg == NULL) {
-		arg_str msg = arg_str_fmt("unknown option: '--" ARG_STR_FMT "'", ARG_STR_ARG(name));
+		ArgStr msg = arg_str_fmt("unknown option: '--" ARG_STR_FMT "'", ARG_STR_ARG(name));
 		return (ParseResult)ARG_ERR(msg);
 	}
 
 	switch ((*foundArg)->kind) {
 	case ARG_KIND_POS: {
-		arg_str msg =
+		ArgStr msg =
 		        arg_str_fmt(
 		                "option '" ARG_STR_FMT "' is positional",
 		                ARG_STR_ARG(name)
@@ -81,7 +81,7 @@ static ParseResult parse_single_longopt(ArgParser* parser, arg_str arg, ArgInfo 
 			// didn't move the offset
 			return (ParseResult)ARG_OK(info.ofs + 1);
 		} else if (info.ofs + 1 >= info.argc) {
-			arg_str msg =
+			ArgStr msg =
 			        arg_str_fmt(
 			                "option '--" ARG_STR_FMT "' requires a value",
 			                ARG_STR_ARG(name)
@@ -102,20 +102,20 @@ static bool shortname_eq(Arg* arg, char shortname)
 	return arg->shortname == shortname;
 }
 
-static ParseResult parse_shortopts(ArgParser* parser, arg_str arg, ArgInfo info)
+static ParseResult parse_shortopts(ArgParser* parser, ArgStr arg, ArgInfo info)
 {
 	for (uint64_t i = 0; i < arg_str_len(arg); i++) {
 		char shortname = arg.ptr[i];
 		Arg** foundArg = NULL;
 		ARG_BUF_FIND(parser->args, shortname, shortname_eq, &foundArg);
 		if (foundArg == NULL) {
-			arg_str msg = arg_str_fmt("unknown option: '-%c'", shortname);
+			ArgStr msg = arg_str_fmt("unknown option: '-%c'", shortname);
 			return (ParseResult)ARG_ERR(msg);
 		}
 
 		switch ((*foundArg)->kind) {
 		case ARG_KIND_POS: {
-			arg_str msg = arg_str_fmt("option '%c' is positional", shortname);
+			ArgStr msg = arg_str_fmt("option '%c' is positional", shortname);
 			return (ParseResult)ARG_ERR(msg);
 		}
 		case ARG_KIND_FLAG:
@@ -145,7 +145,7 @@ static ParseResult parse_shortopts(ArgParser* parser, arg_str arg, ArgInfo info)
 
 static ParseResult parse_positional(
         ArgParser* parser,
-        arg_str arg,
+        ArgStr arg,
         ArgInfo info,
         PositionalInfo* positionals
 )
@@ -161,7 +161,7 @@ static ParseResult parse_positional(
 	return (ParseResult)ARG_OK(info.ofs + 1);
 }
 
-static ParseResult parse_arg(ArgParser* parser, arg_str arg, ArgInfo info,
+static ParseResult parse_arg(ArgParser* parser, ArgStr arg, ArgInfo info,
                              PositionalInfo* positionals)
 {
 	if (arg.ptr[0] == '-') {
@@ -175,7 +175,7 @@ static ParseResult parse_arg(ArgParser* parser, arg_str arg, ArgInfo info,
 	return parse_positional(parser, arg, info, positionals);
 }
 
-static arg_str generate_missing_positional_message(ArgBuf args, PositionalInfo positionals)
+static ArgStr generate_missing_positional_message(ArgBuf args, PositionalInfo positionals)
 {
 	if (positionals.indices.len == 0) {
 		ARG_UNREACHABLE();
@@ -187,12 +187,12 @@ static arg_str generate_missing_positional_message(ArgBuf args, PositionalInfo p
 		Arg* arg = args.ptr[index];
 		ARG_BUF_PUSH(&buf, arg_str_fmt("'" ARG_STR_FMT "'", ARG_STR_ARG(arg->longname)));
 	}
-	arg_str joined = arg_str_join(arg_str_lit(", "), buf.len, buf.ptr);
+	ArgStr joined = arg_str_join(arg_str_lit(", "), buf.len, buf.ptr);
 	for (uint64_t i = 0; i < buf.len; i++) {
 		arg_str_free(buf.ptr[i]);
 	}
 	ARG_BUF_FREE(buf);
-	arg_str msg =
+	ArgStr msg =
 	        arg_str_fmt(
 	                "missing positional arguments: " ARG_STR_FMT,
 	                ARG_STR_ARG(joined)
@@ -213,7 +213,7 @@ ArgParseErr arg_parser_parse(ArgParser* parser, int argc, char** argv)
 		.numConsumed = 0,
 	};
 	while (info.ofs < argc) {
-		arg_str arg = arg_str_ref(argv[info.ofs]);
+		ArgStr arg = arg_str_ref(argv[info.ofs]);
 		ParseResult res = parse_arg(parser, arg, info, &positionals);
 		if (!res.ok) {
 			return (ArgParseErr)ARG_JUST(res.get.error);
@@ -222,7 +222,7 @@ ArgParseErr arg_parser_parse(ArgParser* parser, int argc, char** argv)
 	}
 
 	if (positionals.numConsumed < positionals.indices.len) {
-		arg_str msg = generate_missing_positional_message(parser->args, positionals);
+		ArgStr msg = generate_missing_positional_message(parser->args, positionals);
 		ARG_BUF_FREE(positionals.indices);
 		return (ArgParseErr)ARG_JUST(msg);
 	}

@@ -15,10 +15,10 @@ typedef enum {
 typedef struct {
 	ArgKind kind;
 	char shortname;
-	arg_str longname;
-	arg_str help;
+	ArgStr longname;
+	ArgStr help;
 	// set if kind == ARGKIND_OPT or ARGKIND_POS
-	arg_str value;
+	ArgStr value;
 	// set if kind == ARGKIND_FLAG
 	bool flagValue;
 } Arg;
@@ -33,17 +33,17 @@ typedef struct {
 	(Arg) { .kind = ARGKIND_FLAG, __VA_ARGS__ }
 
 typedef ARG_BUF(Arg*) ArgBuf;
-typedef ARG_BUF(arg_str) ArgStrBuf;
+typedef ARG_BUF(ArgStr) ArgStrBuf;
 
 typedef struct {
 	ArgBuf args;
-	arg_str name;
-	arg_str help;
+	ArgStr name;
+	ArgStr help;
 	ArgStrBuf extra;
 } ArgParser;
 
-typedef ARG_MAYBE(arg_str) ArgParseErr;
+typedef ARG_MAYBE(ArgStr) ArgParseErr;
 
-ArgParser arg_parser_new(arg_str name, arg_str help, ArgBuf args);
+ArgParser arg_parser_new(ArgStr name, ArgStr help, ArgBuf args);
 ArgParseErr arg_parser_parse(ArgParser* parser, int argc, char** argv);
 void arg_parser_show_help(ArgParser* parser, FILE* fp);

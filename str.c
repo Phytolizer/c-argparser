@@ -4,28 +4,28 @@
 #include <stdlib.h>
 #include <string.h>
 
-void arg_str_free(arg_str s)
+void arg_str_free(ArgStr s)
 {
 	if (arg_str_is_owner(s)) {
 		free((char*)s.ptr);
 	}
 }
 
-arg_str arg_str_ref_str_(arg_str s)
+ArgStr arg_str_ref_str_(ArgStr s)
 {
-	return (arg_str) {
+	return (ArgStr) {
 		.ptr = s.ptr, .info = arg_str_ref_info_(arg_str_len(s))
 	};
 }
 
-arg_str arg_str_ref_chars_(const char* ptr)
+ArgStr arg_str_ref_chars_(const char* ptr)
 {
-	return (arg_str) {
+	return (ArgStr) {
 		.ptr = ptr, .info = arg_str_ref_info_(strlen(ptr))
 	};
 }
 
-arg_str arg_str_acquire(const char* ptr, uint64_t len)
+ArgStr arg_str_acquire(const char* ptr, uint64_t len)
 {
 	if (ptr == NULL) {
 		return arg_str_empty;
@@ -36,12 +36,12 @@ arg_str arg_str_acquire(const char* ptr, uint64_t len)
 		return arg_str_empty;
 	}
 
-	return (arg_str) {
+	return (ArgStr) {
 		.ptr = ptr, .info = arg_str_owner_info_(len)
 	};
 }
 
-arg_str arg_str_ref_chars(const char* ptr, uint64_t len)
+ArgStr arg_str_ref_chars(const char* ptr, uint64_t len)
 {
 	if (ptr == NULL) {
 		return arg_str_empty;
@@ -51,12 +51,12 @@ arg_str arg_str_ref_chars(const char* ptr, uint64_t len)
 		return arg_str_empty;
 	}
 
-	return (arg_str) {
+	return (ArgStr) {
 		.ptr = ptr, .info = arg_str_ref_info_(len)
 	};
 }
 
-arg_str arg_str_copy(arg_str s)
+ArgStr arg_str_copy(ArgStr s)
 {
 	if (arg_str_is_empty(s)) {
 		return arg_str_empty;
@@ -70,12 +70,12 @@ arg_str arg_str_copy(arg_str s)
 	memcpy(ptr, arg_str_ptr(s), arg_str_len(s));
 	ptr[arg_str_len(s)] = '\0';
 
-	return (arg_str) {
+	return (ArgStr) {
 		.ptr = ptr, .info = arg_str_owner_info_(arg_str_len(s))
 	};
 }
 
-StrFindResult arg_str_find(arg_str s, char c)
+StrFindResult arg_str_find(ArgStr s, char c)
 {
 	for (size_t i = 0; i < arg_str_len(s); i++) {
 		if (s.ptr[i] == c) {
@@ -85,16 +85,16 @@ StrFindResult arg_str_find(arg_str s, char c)
 	return (StrFindResult)ARG_NOTHING;
 }
 
-arg_str arg_str_fmt(const char* fmt, ...)
+ArgStr arg_str_fmt(const char* fmt, ...)
 {
 	va_list args;
 	va_start(args, fmt);
-	arg_str s = arg_str_fmt_va(fmt, args);
+	ArgStr s = arg_str_fmt_va(fmt, args);
 	va_end(args);
 	return s;
 }
 
-arg_str arg_str_fmt_va(const char* fmt, va_list args)
+ArgStr arg_str_fmt_va(const char* fmt, va_list args)
 {
 	va_list args_copy;
 	va_copy(args_copy, args);
@@ -111,19 +111,19 @@ arg_str arg_str_fmt_va(const char* fmt, va_list args)
 
 	(void)vsnprintf(ptr, (size_t)len + 1, fmt, args);
 
-	return (arg_str) {
+	return (ArgStr) {
 		.ptr = ptr,
 		.info = arg_str_owner_info_(len),
 	};
 }
 
-bool arg_str_eq(arg_str a, arg_str b)
+bool arg_str_eq(ArgStr a, ArgStr b)
 {
 	return arg_str_len(a) == arg_str_len(b)
 	       && memcmp(a.ptr, b.ptr, arg_str_len(a)) == 0;
 }
 
-arg_str arg_str_join(arg_str sep, uint64_t n, const arg_str* strs)
+ArgStr arg_str_join(ArgStr sep, uint64_t n, const ArgStr* strs)
 {
 	if (n == 0) {
 		return arg_str_empty;
@@ -141,7 +141,7 @@ arg_str arg_str_join(arg_str sep, uint64_t n, const arg_str* strs)
 
 	char* dest = ptr;
 	for (uint64_t i = 0; i < n; i++) {
-		arg_str s = strs[i];
+		ArgStr s = strs[i];
 		memcpy(dest, s.ptr, arg_str_len(s));
 		dest += arg_str_len(s);
 		if (i < n - 1) {
@@ -151,7 +151,7 @@ arg_str arg_str_join(arg_str sep, uint64_t n, const arg_str* strs)
 	}
 	*dest = '\0';
 
-	return (arg_str) {
+	return (ArgStr) {
 		.ptr = ptr,
 		.info = arg_str_owner_info_(totalLen),
 	};
