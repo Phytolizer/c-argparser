@@ -10,23 +10,23 @@
 typedef struct {
 	const char* ptr;
 	uint64_t info;
-} str;
+} arg_str;
 
-#define STR_FMT "%.*s"
-#define STR_ARG(s) (int)str_len(s), (char*)(s).ptr
+#define ARG_STR_FMT "%.*s"
+#define ARG_STR_ARG(s) (int)arg_str_len(s), (char*)(s).ptr
 
-#define z_str_ref_info(x) ((x) << 1U)
-#define z_str_owner_info(x) (z_str_ref_info(x) | UINT64_C(1))
+#define arg_str_ref_info_(x) ((x) << 1U)
+#define arg_str_owner_info_(x) (arg_str_ref_info_(x) | UINT64_C(1))
 
-#define str_empty ((str){NULL, z_str_ref_info(0)})
-#define str_lit(s) ((str){.ptr = (s), .info = z_str_ref_info(sizeof(s) - 1)})
+#define arg_str_empty ((arg_str){NULL, arg_str_ref_info_(0)})
+#define arg_str_lit(s) ((arg_str){.ptr = (s), .info = arg_str_ref_info_(sizeof(s) - 1)})
 
-static inline uint64_t str_len(str s)
+static inline uint64_t arg_str_len(arg_str s)
 {
 	return s.info >> 1U;
 }
 
-static inline const char* str_ptr(str s)
+static inline const char* arg_str_ptr(arg_str s)
 {
 	if (s.ptr != NULL) {
 		return s.ptr;
@@ -34,52 +34,56 @@ static inline const char* str_ptr(str s)
 	return "";
 }
 
-static inline const char* str_end(str s)
+static inline const char* arg_str_end(arg_str s)
 {
-	return str_ptr(s) + str_len(s);
+	return arg_str_ptr(s) + arg_str_len(s);
 }
 
-static inline bool str_is_empty(str s)
+static inline bool arg_str_is_empty(arg_str s)
 {
-	return str_len(s) == 0;
+	return arg_str_len(s) == 0;
 }
 
-static inline bool str_is_owner(str s)
+static inline bool arg_str_is_owner(arg_str s)
 {
 	return (s.info & 1U) != 0;
 }
 
-static inline bool str_is_ref(str s)
+static inline bool arg_str_is_ref(arg_str s)
 {
-	return !str_is_owner(s);
+	return !arg_str_is_owner(s);
 }
 
-void str_free(str s);
+void arg_str_free(arg_str s);
 
-#define str_ref(s) \
-	_Generic((s), str : z_str_ref_str, const char* : z_str_ref_chars, char* : z_str_ref_chars)(s)
+#define arg_str_ref(s) \
+	_Generic( \
+	          (s), \
+	          arg_str : arg_str_ref_str_, \
+	          const char* : arg_str_ref_chars_, char* : arg_str_ref_chars_ \
+	        )(s)
 
-str z_str_ref_str(str s);
-str z_str_ref_chars(const char* ptr);
-str str_acquire(const char* ptr, uint64_t len);
-str str_ref_chars(const char* ptr, uint64_t len);
-str str_copy(str s);
+arg_str arg_str_ref_str_(arg_str s);
+arg_str arg_str_ref_chars_(const char* ptr);
+arg_str arg_str_acquire(const char* ptr, uint64_t len);
+arg_str arg_str_ref_chars(const char* ptr, uint64_t len);
+arg_str arg_str_copy(arg_str s);
 
-static inline str str_shifted(str s, uint64_t n)
+static inline arg_str arg_str_shifted(arg_str s, uint64_t n)
 {
-	if (n > str_len(s)) {
-		return str_empty;
+	if (n > arg_str_len(s)) {
+		return arg_str_empty;
 	}
-	return str_ref_chars(s.ptr + n, str_len(s) - n);
+	return arg_str_ref_chars(s.ptr + n, arg_str_len(s) - n);
 }
 
 typedef ARG_MAYBE(uint64_t) StrFindResult;
 
-StrFindResult str_find(str s, char c);
+StrFindResult arg_str_find(arg_str s, char c);
 
-str str_fmt(const char* fmt, ...);
-str str_fmt_va(const char* fmt, va_list args);
+arg_str arg_str_fmt(const char* fmt, ...);
+arg_str arg_str_fmt_va(const char* fmt, va_list args);
 
-bool str_eq(str a, str b);
+bool arg_str_eq(arg_str a, arg_str b);
 
-str str_join(str sep, uint64_t n, const str* strs);
+arg_str arg_str_join(arg_str sep, uint64_t n, const arg_str* strs);
