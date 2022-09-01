@@ -33,13 +33,13 @@ typedef struct {
 	(Arg) { .kind = ARGKIND_FLAG, __VA_ARGS__ }
 
 typedef ARG_BUF(Arg*) ArgBuf;
-typedef ARG_BUF(arg_str) StrBuf;
+typedef ARG_BUF(arg_str) ArgStrBuf;
 
 typedef struct {
 	ArgBuf args;
 	arg_str name;
 	arg_str help;
-	StrBuf extra;
+	ArgStrBuf extra;
 } ArgParser;
 
 typedef ARG_MAYBE(arg_str) ArgParseErr;

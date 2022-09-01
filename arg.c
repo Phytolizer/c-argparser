@@ -181,7 +181,7 @@ static arg_str generate_missing_positional_message(ArgBuf args, PositionalInfo p
 		ARG_UNREACHABLE();
 	}
 
-	StrBuf buf = ARG_BUF_NEW;
+	ArgStrBuf buf = ARG_BUF_NEW;
 	for (uint64_t i = positionals.numConsumed; i < positionals.indices.len; i++) {
 		uint64_t index = positionals.indices.ptr[i];
 		Arg* arg = args.ptr[index];
