@@ -21,7 +21,7 @@ static IndexBuf count_positionals(ArgBuf args)
 	return indices;
 }
 
-ArgParser argparser_new(arg_str name, arg_str help, ArgBuf args)
+ArgParser arg_parser_new(arg_str name, arg_str help, ArgBuf args)
 {
 	return (ArgParser) {
 		.name = name,
@@ -175,7 +175,7 @@ static ParseResult parse_arg(ArgParser* parser, arg_str arg, ArgInfo info,
 	return parse_positional(parser, arg, info, positionals);
 }
 
-arg_str generate_missing_positional_message(ArgBuf args, PositionalInfo positionals)
+static arg_str generate_missing_positional_message(ArgBuf args, PositionalInfo positionals)
 {
 	if (positionals.indices.len == 0) {
 		ARG_UNREACHABLE();
@@ -201,7 +201,7 @@ arg_str generate_missing_positional_message(ArgBuf args, PositionalInfo position
 	return msg;
 }
 
-ArgParseErr argparser_parse(ArgParser* parser, int argc, char** argv)
+ArgParseErr arg_parser_parse(ArgParser* parser, int argc, char** argv)
 {
 	ArgInfo info = {
 		.argc = argc,
@@ -231,7 +231,7 @@ ArgParseErr argparser_parse(ArgParser* parser, int argc, char** argv)
 	return (ArgParseErr)ARG_NOTHING;
 }
 
-void argparser_show_help(ArgParser* parser, FILE* fp)
+void arg_parser_show_help(ArgParser* parser, FILE* fp)
 {
 	(void)fprintf(
 	        fp,
