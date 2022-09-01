@@ -16,9 +16,9 @@ jobs:
           persist-credentials: false
           fetch-depth: 0
           ref: refs/heads/${{ github.head_ref }}
-      - uses: actions/setup-python@v2
-        with:
-          python-version: 3.10
+      - name: Install dependencies
+        run: |
+          sudo apt-get install -y gcc
       - uses: tokusumi/markdown-embed-code@v1.0.0
         with:
           markdown: "README.md"
