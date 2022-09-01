@@ -2,19 +2,19 @@
 
 #include <stdbool.h>
 
-#define MAYBE(T) \
+#define ARG_MAYBE(T) \
 	struct { \
 		bool present; \
 		T value; \
 	}
 
-#define JUST(v) \
+#define ARG_JUST(v) \
 	{ .present = true, .value = v, }
 
-#define NOTHING \
+#define ARG_NOTHING \
 	{ .present = false, }
 
-#define RESULT(T, E) \
+#define ARG_RESULT(T, E) \
 	struct { \
 		bool ok; \
 		union { \
@@ -23,8 +23,8 @@
 		} get; \
 	}
 
-#define OK(v) \
+#define ARG_OK(v) \
 	{ .ok = true, .get.value = v, }
 
-#define ERR(e) \
+#define ARG_ERR(e) \
 	{ .ok = false, .get.error = e, }

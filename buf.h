@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#define BUF(T) \
+#define ARG_BUF(T) \
 	struct { \
 		T* ptr; \
 		uint64_t len; \
@@ -13,28 +13,28 @@
 		bool ref; \
 	}
 
-#define BUF_EMPTY \
+#define ARG_BUF_EMPTY \
 	{ .ptr = NULL, .len = 0, .cap = 0, .ref = false }
 
-#define BUF_REF(p, sz) \
+#define ARG_BUF_REF(p, sz) \
 	{ .ptr = (p), .len = (sz), .cap = (sz), .ref = true }
 
-#define BUF_ARRAY(a) BUF_REF((a), sizeof(a) / sizeof((a)[0]))
+#define ARG_BUF_ARRAY(a) BUF_REF((a), sizeof(a) / sizeof((a)[0]))
 
-#define BUF_OWNER(p, sz) \
+#define ARG_BUF_OWNER(p, sz) \
 	{ .ptr = (p), .len = (sz), .cap = (sz), .ref = false }
 
-#define BUF_NEW \
+#define ARG_BUF_NEW \
 	{ .ptr = NULL, .len = 0, .cap = 0, .ref = false }
 
-#define BUF_FREE(buf) \
+#define ARG_BUF_FREE(buf) \
 	do { \
 		if (!(buf).ref) { \
 			free((buf).ptr); \
 		} \
 	} while (false)
 
-#define BUF_PUSH(buf, val) \
+#define ARG_BUF_PUSH(buf, val) \
 	do { \
 		if ((buf)->len == (buf)->cap) { \
 			(buf)->cap = (buf)->cap ? (buf)->cap * 2 : 1; \
@@ -43,7 +43,7 @@
 		(buf)->ptr[(buf)->len++] = (val); \
 	} while (false)
 
-#define BUF_FIND(buf, val, eq, target) \
+#define ARG_BUF_FIND(buf, val, eq, target) \
 	do { \
 		for (uint64_t i = 0; i < (buf).len; i++) { \
 			if (eq((buf).ptr[i], (val))) { \

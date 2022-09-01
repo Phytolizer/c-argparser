@@ -79,10 +79,10 @@ StrFindResult str_find(str s, char c)
 {
 	for (size_t i = 0; i < str_len(s); i++) {
 		if (s.ptr[i] == c) {
-			return (StrFindResult)JUST(i);
+			return (StrFindResult)ARG_JUST(i);
 		}
 	}
-	return (StrFindResult)NOTHING;
+	return (StrFindResult)ARG_NOTHING;
 }
 
 str str_fmt(const char* fmt, ...)

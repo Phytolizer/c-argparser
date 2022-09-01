@@ -73,7 +73,7 @@ static inline str str_shifted(str s, uint64_t n)
 	return str_ref_chars(s.ptr + n, str_len(s) - n);
 }
 
-typedef MAYBE(uint64_t) StrFindResult;
+typedef ARG_MAYBE(uint64_t) StrFindResult;
 
 StrFindResult str_find(str s, char c);
 

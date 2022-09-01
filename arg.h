@@ -2,6 +2,8 @@
 
 #include "buf.h"
 #include "str.h"
+#include "sum.h"
+
 #include <stdio.h>
 
 typedef enum {
@@ -30,8 +32,8 @@ typedef struct {
 #define ARG_FLAG(...) \
 	(Arg) { .kind = ARGKIND_FLAG, __VA_ARGS__ }
 
-typedef BUF(Arg*) ArgBuf;
-typedef BUF(str) StrBuf;
+typedef ARG_BUF(Arg*) ArgBuf;
+typedef ARG_BUF(str) StrBuf;
 
 typedef struct {
 	ArgBuf args;
@@ -40,8 +42,8 @@ typedef struct {
 	StrBuf extra;
 } ArgParser;
 
-typedef MAYBE(str) ArgParseErr;
+typedef ARG_MAYBE(str) ArgParseErr;
 
-ArgParser argparser_new(str name, str help, ArgBuf args);
-ArgParseErr argparser_parse(ArgParser* parser, int argc, char** argv);
-void argparser_show_help(ArgParser* parser, FILE* fp);
+ArgParser arg_parser_new(str name, str help, ArgBuf args);
+ArgParseErr arg_parser_parse(ArgParser* parser, int argc, char** argv);
+void arg_parser_show_help(ArgParser* parser, FILE* fp);
