@@ -18,7 +18,7 @@ typedef struct {
 #define arg_str_ref_info_(x) ((x) << 1U)
 #define arg_str_owner_info_(x) (arg_str_ref_info_(x) | UINT64_C(1))
 
-#define arg_str_empty ((ArgStr){NULL, arg_str_ref_info_(0)})
+#define arg_str_empty ((ArgStr){.ptr = NULL, .info = arg_str_ref_info_(0)})
 #define arg_str_lit(s) ((ArgStr){.ptr = (s), .info = arg_str_ref_info_(sizeof(s) - 1)})
 
 static inline uint64_t arg_str_len(ArgStr s)
