@@ -1,3 +1,3 @@
 #pragma once
 
-#define UNREACHABLE() __builtin_unreachable()
+#define ARG_UNREACHABLE() __builtin_unreachable()

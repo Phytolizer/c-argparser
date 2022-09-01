@@ -160,7 +160,7 @@ static ParseResult parse_arg(ArgParser* parser, str arg, ArgInfo info, Positiona
 str generate_missing_positional_message(ArgBuf args, PositionalInfo positionals)
 {
 	if (positionals.indices.len == 0) {
-		UNREACHABLE();
+		ARG_UNREACHABLE();
 	}
 
 	StrBuf buf = ARG_BUF_NEW;
