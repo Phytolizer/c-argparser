@@ -1,0 +1,16 @@
+--style=linux
+--indent=tab=8
+--indent-preproc-define
+--indent-col1-comments
+--indent-continuation=1
+--pad-oper
+--pad-comma
+--pad-header
+--unpad-paren
+--align-pointer=type
+--break-one-line-headers
+--add-braces
+--add-one-line-braces
+--max-code-length=100
+--suffix=none
+--formatted
