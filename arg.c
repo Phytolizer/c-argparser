@@ -48,8 +48,8 @@ static ParseResult parse_single_longopt(ArgParser* parser, ArgStr arg, ArgInfo i
 {
 	StrFindResult eqPos = arg_str_find(arg, '=');
 	ArgStr name = eqPos.present
-	               ? arg_str_ref_chars(arg.ptr, eqPos.value)
-	               : arg;
+	              ? arg_str_ref_chars(arg.ptr, eqPos.value)
+	              : arg;
 	Arg** foundArg = NULL;
 	ARG_BUF_FIND(parser->args, name, longname_eq, &foundArg);
 	if (foundArg == NULL) {
