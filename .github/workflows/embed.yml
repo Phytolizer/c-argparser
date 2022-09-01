@@ -1,0 +1,15 @@
+name: Embed stuff into README.md
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: tokusumi/markdown-embed-code@v1.0.0
+

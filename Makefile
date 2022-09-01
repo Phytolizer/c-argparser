@@ -5,6 +5,9 @@ LIB = libargparser.a
 
 all: $(LIB)
 
+example: $(LIB) main.c
+	$(CC) $(CFLAGS) main.c -L. -largparser -o $@
+
 $(LIB): $(OBJS)
 	ar rcs $@ $^
 
