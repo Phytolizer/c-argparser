@@ -1,5 +1,5 @@
-#include "arg.h"
-#include "macro.h"
+#include "arg/arg.h"
+#include "arg/macro.h"
 
 #include <inttypes.h>
 

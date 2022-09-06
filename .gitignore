@@ -2,3 +2,4 @@
 *.a
 *.d
 example
+compile_commands.json

@@ -1,6 +1,6 @@
 SOURCES = arg.c str.c
 OBJS = $(patsubst %.c,%.o,$(SOURCES))
-CFLAGS = -std=c11 -MD -MP -Wall -Wextra -Wpedantic -Wmissing-prototypes
+CFLAGS = -std=c11 -MD -MP -Wall -Wextra -Wpedantic -Wmissing-prototypes -Iinclude
 LIB = libargparser.a
 
 all: $(LIB)
