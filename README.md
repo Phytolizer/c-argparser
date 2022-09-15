@@ -17,7 +17,7 @@ To use the library, simply include `arg.h` in your project and link with
 ```c
 // main.c
 
-#include "arg.h"
+#include "arg/arg.h"
 
 int main(int argc, char** argv)
 {

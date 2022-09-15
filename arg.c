@@ -1,3 +1,4 @@
+// vi: ts=8 sw=8 noet
 #include "arg/arg.h"
 #include "arg/macro.h"
 
@@ -216,6 +217,7 @@ ArgParseErr arg_parser_parse(ArgParser* parser, int argc, char** argv)
 		ArgStr arg = arg_str_ref(argv[info.ofs]);
 		ParseResult res = parse_arg(parser, arg, info, &positionals);
 		if (!res.ok) {
+			ARG_BUF_FREE(positionals.indices);
 			return (ArgParseErr)ARG_JUST(res.get.error);
 		}
 		info.ofs = res.get.value;
