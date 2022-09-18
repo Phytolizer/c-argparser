@@ -100,6 +100,7 @@ ArgStr arg_str_fmt_va(const char* fmt, va_list args)
 	va_copy(args_copy, args);
 
 	int len = vsnprintf(NULL, 0, fmt, args_copy);
+	va_end(args_copy);
 	if (len < 0) {
 		return arg_str_empty;
 	}
