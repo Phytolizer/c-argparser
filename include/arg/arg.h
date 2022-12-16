@@ -1,6 +1,6 @@
 #pragma once
 
-#include "buf.h"
+#include "gbuf.h"
 #include "str.h"
 #include "sum.h"
 
@@ -23,17 +23,20 @@ typedef struct {
 	bool flagValue;
 } Arg;
 
-#define ARG_POS(name, hlp)                                                     \
+#define ARG_POS(name, hlp) \
 	(Arg) { .kind = ARG_KIND_POS, .longname = name, .help = hlp }
 
-#define ARG_OPT(...)                                                           \
+#define ARG_OPT(...) \
 	(Arg) { .kind = ARG_KIND_OPT, __VA_ARGS__ }
 
-#define ARG_FLAG(...)                                                          \
+#define ARG_FLAG(...) \
 	(Arg) { .kind = ARG_KIND_FLAG, __VA_ARGS__ }
 
-typedef ARG_BUF(Arg*) ArgBuf;
-typedef ARG_BUF(ArgStr) ArgStrBuf;
+typedef ARG_GBUF(Arg*) ArgBuf;
+typedef ARG_GBUF(ArgStr) ArgStrBuf;
+
+#define ARG_BUF_ARRAY(a) (ArgBuf) ARG_GBUF_ARRAY(a)
+#define ARG_BUF_REF(p, sz) (ArgBuf) ARG_GBUF_REF(p, sz)
 
 typedef struct {
 	ArgBuf args;

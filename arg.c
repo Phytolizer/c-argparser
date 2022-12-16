@@ -4,7 +4,7 @@
 
 #include <inttypes.h>
 
-typedef ARG_BUF(uint64_t) IndexBuf;
+typedef ARG_GBUF(uint64_t) IndexBuf;
 
 typedef struct {
 	IndexBuf indices;
@@ -13,10 +13,10 @@ typedef struct {
 
 static IndexBuf count_positionals(ArgBuf args)
 {
-	IndexBuf indices = ARG_BUF_NEW;
+	IndexBuf indices = ARG_GBUF_NEW;
 	for (uint64_t i = 0; i < args.len; i++) {
 		if (args.ptr[i]->kind == ARG_KIND_POS) {
-			ARG_BUF_PUSH(&indices, i);
+			ARG_GBUF_PUSH(&indices, i);
 		}
 	}
 	return indices;
@@ -28,7 +28,7 @@ ArgParser arg_parser_new(ArgStr name, ArgStr help, ArgBuf args)
 		.name = name,
 		.args = args,
 		.help = help,
-		.extra = ARG_BUF_NEW,
+		.extra = ARG_GBUF_NEW,
 	};
 }
 
@@ -52,7 +52,7 @@ static ParseResult parse_single_longopt(ArgParser* parser, ArgStr arg, ArgInfo i
 	              ? arg_str_ref_chars(arg.ptr, eqPos.value)
 	              : arg;
 	Arg** foundArg = NULL;
-	ARG_BUF_FIND(parser->args, name, longname_eq, &foundArg);
+	ARG_GBUF_FIND(parser->args, name, longname_eq, &foundArg);
 	if (foundArg == NULL) {
 		ArgStr msg = arg_str_fmt("unknown option: '--" ARG_STR_FMT "'", ARG_STR_ARG(name));
 		return (ParseResult)ARG_ERR(msg);
@@ -108,7 +108,7 @@ static ParseResult parse_shortopts(ArgParser* parser, ArgStr arg, ArgInfo info)
 	for (uint64_t i = 0; i < arg_str_len(arg); i++) {
 		char shortname = arg.ptr[i];
 		Arg** foundArg = NULL;
-		ARG_BUF_FIND(parser->args, shortname, shortname_eq, &foundArg);
+		ARG_GBUF_FIND(parser->args, shortname, shortname_eq, &foundArg);
 		if (foundArg == NULL) {
 			ArgStr msg = arg_str_fmt("unknown option: '-%c'", shortname);
 			return (ParseResult)ARG_ERR(msg);
@@ -152,7 +152,7 @@ static ParseResult parse_positional(
 )
 {
 	if (positionals->numConsumed >= positionals->indices.len) {
-		ARG_BUF_PUSH(&parser->extra, arg);
+		ARG_GBUF_PUSH(&parser->extra, arg);
 		return (ParseResult)ARG_OK(info.ofs + 1);
 	}
 
@@ -182,17 +182,17 @@ static ArgStr generate_missing_positional_message(ArgBuf args, PositionalInfo po
 		ARG_UNREACHABLE();
 	}
 
-	ArgStrBuf buf = ARG_BUF_NEW;
+	ArgStrBuf buf = ARG_GBUF_NEW;
 	for (uint64_t i = positionals.numConsumed; i < positionals.indices.len; i++) {
 		uint64_t index = positionals.indices.ptr[i];
 		Arg* arg = args.ptr[index];
-		ARG_BUF_PUSH(&buf, arg_str_fmt("'" ARG_STR_FMT "'", ARG_STR_ARG(arg->longname)));
+		ARG_GBUF_PUSH(&buf, arg_str_fmt("'" ARG_STR_FMT "'", ARG_STR_ARG(arg->longname)));
 	}
 	ArgStr joined = arg_str_join(arg_str_lit(", "), buf.len, buf.ptr);
 	for (uint64_t i = 0; i < buf.len; i++) {
 		arg_str_free(buf.ptr[i]);
 	}
-	ARG_BUF_FREE(buf);
+	ARG_GBUF_FREE(buf);
 	ArgStr msg =
 	        arg_str_fmt(
 	                "missing positional arguments: " ARG_STR_FMT,
@@ -217,7 +217,7 @@ ArgParseErr arg_parser_parse(ArgParser* parser, int argc, char** argv)
 		ArgStr arg = arg_str_ref(argv[info.ofs]);
 		ParseResult res = parse_arg(parser, arg, info, &positionals);
 		if (!res.ok) {
-			ARG_BUF_FREE(positionals.indices);
+			ARG_GBUF_FREE(positionals.indices);
 			return (ArgParseErr)ARG_JUST(res.get.error);
 		}
 		info.ofs = res.get.value;
@@ -225,11 +225,11 @@ ArgParseErr arg_parser_parse(ArgParser* parser, int argc, char** argv)
 
 	if (positionals.numConsumed < positionals.indices.len) {
 		ArgStr msg = generate_missing_positional_message(parser->args, positionals);
-		ARG_BUF_FREE(positionals.indices);
+		ARG_GBUF_FREE(positionals.indices);
 		return (ArgParseErr)ARG_JUST(msg);
 	}
 
-	ARG_BUF_FREE(positionals.indices);
+	ARG_GBUF_FREE(positionals.indices);
 	return (ArgParseErr)ARG_NOTHING;
 }
 
@@ -251,7 +251,7 @@ void arg_parser_show_help(ArgParser* parser, FILE* fp)
 		(void)fprintf(fp, " <" ARG_STR_FMT ">", ARG_STR_ARG(arg->longname));
 	}
 	(void)fprintf(fp, "\n");
-	ARG_BUF_FREE(indices);
+	ARG_GBUF_FREE(indices);
 	(void)fprintf(fp, "OPTIONS:\n");
 	for (uint64_t i = 0; i < parser->args.len; i++) {
 		Arg* arg = parser->args.ptr[i];

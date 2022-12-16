@@ -30,7 +30,7 @@ int main(int argc, char** argv)
 	ArgParser parser = arg_parser_new(
 	                           arg_str_lit("example-program"),
 	                           arg_str_lit("An example program"),
-	                           (ArgBuf)ARG_BUF_ARRAY(supportedArgs)
+	                           ARG_BUF_ARRAY(supportedArgs)
 	                   );
 	ArgParseErr err = arg_parser_parse(&parser, argc, argv);
 	if (err.present) {
