@@ -17,20 +17,17 @@ jobs:
         include:
           - os: windows-latest
             c_compiler: cl
-            cpp_compiler: cl
           - os: ubuntu-latest
             c_compiler: gcc
-            cpp_compiler: g++
           - os: ubuntu-latest
             c_compiler: clang
-            cpp_compiler: clang++
 
     steps:
       - uses: actions/checkout@v3
       - name: get-cmake
         uses: lukka/get-cmake@latest
         with:
-          cmake-version: "~3.20.0"
+          cmakeVersion: "~3.20.0"
 
       - name: Configure CMake
         run: cmake -Bbuild -GNinja -DCMAKE_C_COMPILER=${{ matrix.os }} -DCMAKE_BUILD_TYPE=Release
