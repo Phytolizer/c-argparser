@@ -30,7 +30,7 @@ jobs:
           cmakeVersion: "~3.20.0"
 
       - name: Configure CMake
-        run: cmake -Bbuild -GNinja -DCMAKE_C_COMPILER=${{ matrix.os }} -DCMAKE_BUILD_TYPE=Release
+        run: cmake -Bbuild -GNinja -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=Release
 
       - name: Build
         run: cmake --build build
