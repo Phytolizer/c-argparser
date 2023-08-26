@@ -29,6 +29,12 @@ jobs:
         with:
           cmakeVersion: "~3.20.0"
 
+      - name: Activate VS dev prompt
+        if: matrix.os == 'windows-latest'
+        uses: TheMrMilchmann/setup-msvc-dev@v2
+        with:
+          arch: x64
+
       - name: Configure CMake
         run: cmake -Bbuild -GNinja -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=Release
 
