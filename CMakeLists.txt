@@ -28,3 +28,5 @@ install(
     DIRECTORY include
     DESTINATION .
 )
+
+add_subdirectory(simplified-api)
