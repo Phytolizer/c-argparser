@@ -27,7 +27,7 @@ jobs:
       - name: get-cmake
         uses: lukka/get-cmake@latest
         with:
-          cmakeVersion: "~3.20.0"
+          cmakeVersion: "~3.23.0"
 
       - name: Activate VS dev prompt
         if: matrix.os == 'windows-latest'
