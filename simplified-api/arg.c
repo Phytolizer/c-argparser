@@ -212,7 +212,12 @@ static ArgParseResult parse_arg(ArgParser* parser, char const* arg, ArgInfo info
 static char* arg__join(char const* sep, size_t count, char** strs)
 {
 	if (count == 0) {
-		return strdup("");
+		char* empty = malloc(1);
+		if (empty == NULL) {
+			return NULL;
+		}
+		empty[0] = '\0';
+		return empty;
 	}
 
 	size_t sepLen = strlen(sep);
